@@ -15,6 +15,9 @@ ConcatStringList::ConcatStringList(const char* ch) {
    this->tail = head;
    this->sizeL = head->getSize();
    count = 1;
+   //ref
+   ReferencesList::RefNode* pR = new ReferencesList::RefNode(2,head); // head = 1, tail = 1
+   refList.add(*pR);
 }
 int ConcatStringList::length() const {
    return this->sizeL;
@@ -106,13 +109,11 @@ int ConcatStringList::indexOf(char c) const {
 std::string ConcatStringList::toString() const {
    stringstream listStr;
    CharArrayNode* temp = head;
-   if(temp == nullptr) return "ConcatStringList[\"\"]";
-   listStr << "ConcatStringList[\"";
+   if(temp == nullptr) return "";
    while (temp) {
       listStr << temp->CharArrayList;
       temp = temp->next;
    }
-   listStr << "\"]";
    return listStr.str();
 }
 
@@ -122,6 +123,14 @@ ConcatStringList ConcatStringList::concat(const ConcatStringList &otherS) const 
    int sizeTotal = this->sizeL + otherS.sizeL;
    int countTotal = this->count + otherS.count; 
    ConcatStringList temp(this->head, otherS.tail, sizeTotal, countTotal);
+   //ref
+   ReferencesList::RefNode* pR = new ReferencesList::RefNode(0, head);
+   ReferencesList::RefNode* pR_1 = new ReferencesList::RefNode(0, otherS.tail);
+   // refList.addRefAt(refList.size() - 1, 1);
+   // refList.addRefAt(0, 1);
+   refList.addRefAt(*pR, 1);
+   refList.addRefAt(*pR_1, 1);
+   
    return temp;
 }
 
@@ -169,7 +178,97 @@ ConcatStringList ConcatStringList::reverse() const {
    }
    return revList;
 }
+
 ConcatStringList::~ConcatStringList() {
-   cout << "\n";
-   cout << "-----END------\n";
+
+}
+
+//RefList Method
+void ConcatStringList::ReferencesList::checkIndex(int index) const {
+   if (index < 0 || index >= this->length) 
+      throw out_of_range("Index of references list is invalid!");
+}
+
+int ConcatStringList::ReferencesList::size() const {
+   return length;
+}
+
+int ConcatStringList::ReferencesList::refCountAt(int index) const {
+   checkIndex(index);
+   RefNode* temp = headR;
+   int i = 0;
+   while(temp) {
+      if (i == index) break;
+      i++;
+      temp = temp->next;
+   }
+   return temp->val;
+}
+std::string ConcatStringList::ReferencesList::refCountsString() const {
+   stringstream ss;
+   RefNode* temp = headR;
+   if (headR == nullptr) {
+      ss << "RefCounts[]";
+      return ss.str();
+   }
+   ss << "RefCounts[";
+   while(temp) {
+      ss << temp->val;
+      temp = temp->next;
+      temp == nullptr ? ss << "]" : ss << ",";
+   }
+   return ss.str();
+}
+
+void ConcatStringList::ReferencesList::add(const RefNode &other) {
+   RefNode* newNode = new RefNode(other);
+   if (headR == nullptr) {
+      headR = tailR = newNode;
+      this->length++;
+      return;
+   }
+   tailR->next = newNode;
+   tailR = newNode;
+   this->length++;
+}
+
+void ConcatStringList::ReferencesList::addRefAt(int index, int value) {
+   checkIndex(index);
+   RefNode* temp = headR;
+   int i = 0;
+   while(temp) {
+      if (i == index) {
+         temp->val += value;
+         return;
+      }
+      i++;
+      temp = temp->next;
+   }
+}
+void ConcatStringList::ReferencesList::addRefAt(const RefNode &node, int value) {
+   RefNode* temp = headR;
+   while (temp) {
+      if (temp->refAdrs == node.refAdrs) {
+         temp->val += value;
+         return;
+      }
+      temp = temp->next;
+   }
+}
+//DelStringList
+int ConcatStringList::DeleteStringList::size() const {
+   return this->length;
+}
+
+std::string ConcatStringList::DeleteStringList::totalRefCountsString() const {
+   if (headD == nullptr) return "TotalRefCounts[]";
+   int count = 0;
+   DelStrNode* temp = headD;
+   while(temp) {
+      if (temp->headRef == temp->tailRef) count += temp->headRef->val;
+      else count += (temp->headRef->val + temp->tailRef->val); 
+      temp = temp->next;
+   }
+   string s = "TotalRefCounts[" + to_string(count) + "]";
+   return s;
 }

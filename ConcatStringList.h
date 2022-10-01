@@ -39,18 +39,55 @@ public:
 public:
     class ReferencesList {
         // TODO: may provide some attributes
-
+        public: 
+            class RefNode;
+        private:
+            int length;
+            RefNode* headR;
+            RefNode* tailR;
         public:
+            ReferencesList(): length(0), headR(nullptr), tailR(nullptr) {}
             int size() const;
             int refCountAt(int index) const;
+            void addRefAt(int index, int value);
+            void addRefAt(const RefNode &node, int value);
+            void add(const RefNode &other); 
+            void sort();
             std::string refCountsString() const;
+            void checkIndex(int index) const;
+        public:
+            class RefNode {
+                public:
+                    int val;
+                    CharArrayNode* refAdrs;
+                    RefNode* next;
+                public:
+                    RefNode(): val(0), refAdrs(nullptr), next(nullptr) {}
+                    RefNode(const RefNode &other): val(other.val), refAdrs(other.refAdrs), next(nullptr) {}
+                    RefNode(const int &v, CharArrayNode* node): val(v), refAdrs(node), next(nullptr) {}
+            };
     };
     class DeleteStringList {
         // TODO: may provide some attributes
-
+        public:
+            class DelStrNode;
+            class ReferencesList::RefNode;
+        private:
+            int length;
+            DelStrNode* headD;
+            DelStrNode* tailD;
         public:
             int size() const;
             std::string totalRefCountsString() const;
+        public:
+            class DelStrNode {
+                public:
+                    ReferencesList::RefNode* headRef;
+                    ReferencesList::RefNode* tailRef;
+                    DelStrNode* next;
+                public:
+                    DelStrNode(): headRef(nullptr), tailRef(nullptr), next(nullptr) {}
+            };
     };
     class CharArrayNode {
         // public: 
@@ -80,6 +117,8 @@ public:
             return size;
         }
     };
+
+
 };
 
 #endif // __CONCAT_STRING_LIST_H__
