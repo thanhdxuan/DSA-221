@@ -50,11 +50,13 @@ public:
             int size() const;
             int refCountAt(int index) const;
             void addRefAt(int index, int value);
-            void addRefAt(const RefNode &node, int value);
+            RefNode& addRefAt(const CharArrayNode &node, int value);
+            // void addRefAt(const CharArrayNode &node, int value);
             void add(const RefNode &other); 
             void sort();
             std::string refCountsString() const;
             void checkIndex(int index) const;
+            void check();
         public:
             class RefNode {
                 public:
@@ -78,6 +80,8 @@ public:
             DelStrNode* tailD;
         public:
             int size() const;
+            void add(const DelStrNode &other);
+            void checkNdel(); //check if ref == 0
             std::string totalRefCountsString() const;
         public:
             class DelStrNode {
@@ -87,6 +91,13 @@ public:
                     DelStrNode* next;
                 public:
                     DelStrNode(): headRef(nullptr), tailRef(nullptr), next(nullptr) {}
+                    DelStrNode(ReferencesList::RefNode &h, ReferencesList::RefNode &t) {
+                        headRef = new ReferencesList::RefNode();
+                        tailRef = new ReferencesList::RefNode();
+                        headRef = &h;
+                        tailRef = &t;
+                        next = nullptr;
+                    }
             };
     };
     class CharArrayNode {
