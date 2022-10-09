@@ -132,7 +132,10 @@ ConcatStringList ConcatStringList::concat(const ConcatStringList &otherS) const 
 
 ConcatStringList ConcatStringList::subString(int from, int to) const {
    checkIndex(from);
-   checkIndex(to);
+   //check index for "to" in subString function
+   if (to < 0 || to > this->sizeL) {
+      throw out_of_range("Index of string is invalid!");
+   }
    if (from >= to) throw logic_error("Invalid range");
    int lCh, rCh;
    CharArrayNode *lNode = this->getPtr(from, lCh);
@@ -196,6 +199,7 @@ ConcatStringList::~ConcatStringList() {
       refList.addRefAt(*this->head, -1), 
       refList.addRefAt(*this->tail, -1)
    );
+   
    delStrList.add(*newNode);
    delStrList.checkNdel();
    refList.check();
@@ -240,14 +244,45 @@ std::string ConcatStringList::ReferencesList::refCountsString() const {
 
 void ConcatStringList::ReferencesList::add(const RefNode &other) {
    RefNode* newNode = new RefNode(other);
+   if (newNode->val == 0) return;
+   RefNode* curr = headR;
+   RefNode* prev = headR;
    if (headR == nullptr) {
       headR = tailR = newNode;
       this->length++;
       return;
    }
-   tailR->next = newNode;
-   tailR = newNode;
-   this->length++;
+   //if (new value <= head value or head value == 0) -> insert at head
+   if (newNode->val <= headR->val || headR->val == 0) {
+      newNode->next = headR;
+      headR = newNode;
+      this->length++;
+      return;
+   }
+
+   //else if (new value  < head value), traverse and insert before 0
+   while (curr && curr->val != 0) {
+      if (newNode->val <= curr->val) {
+         newNode->next = curr;
+         prev->next = newNode;
+         this->length++;
+         return;
+      }
+      if (prev->next == curr) prev = prev->next;
+      curr = curr->next;
+   }
+   // else -> insert at tail
+   if (curr == nullptr) {
+      tailR->next = newNode;
+      tailR = newNode;
+      this->length++;
+   }
+   else {
+      newNode->next = curr;
+      prev->next = newNode;
+      this->length++;
+   }
+   
 }
 
 void ConcatStringList::ReferencesList::addRefAt(int index, int value) {
@@ -306,12 +341,13 @@ void ConcatStringList::DeleteStringList::add(const DelStrNode &other) {
 }
 
 void ConcatStringList::DeleteStringList::checkNdel() {
+   DelStrNode* prev = this->headD;
    DelStrNode* temp = this->headD;
    while (temp) {
       int sum = temp->headRef->val + temp->tailRef->val;
       if (sum == 0) {
          if (temp->headRef->refAdrs == nullptr) {
-            return;
+            // return;
          }
          else if (temp->headRef->refAdrs == temp->tailRef->refAdrs) {
             delete temp->headRef->refAdrs;
@@ -321,15 +357,40 @@ void ConcatStringList::DeleteStringList::checkNdel() {
             CharArrayNode* t = temp->tailRef->refAdrs;
             while (h != t) {
                CharArrayNode* p = h;
-               delete p;
                h = h->next;
+               delete p;
             }
             delete t;
          }
          temp->headRef->refAdrs = nullptr;
          temp->tailRef->refAdrs = nullptr;
+         //delete this node
+         if (temp == headD) { //delete at head
+            headD = headD->next;
+            delete temp;
+            temp = headD;
+            prev = headD;
+            continue;
+         }
+         else if (temp == tailD) {
+            tailD = prev;
+            tailD->next = nullptr;
+            delete temp;
+            return;
+         }
+         else {
+            prev->next = temp->next;
+            delete temp;
+            temp = prev->next;
+            continue;
+         }
+
       }
       temp = temp->next;
+      if (temp == headD) {
+         continue;
+      }
+      prev = prev->next;
    }
 }
 
@@ -347,4 +408,53 @@ void ConcatStringList::ReferencesList::check() {
    this->headR = nullptr;
    this->tailR = nullptr;
    this->length = 0;
+}
+
+ConcatStringList::ReferencesList::RefNode* ConcatStringList::ReferencesList::
+swap(RefNode* p1, RefNode* p2) {
+   RefNode* temp = p2->next;
+   p2->next = p1;
+   p1->next = temp;
+   return p2;
+}
+void ConcatStringList::ReferencesList::sort() {
+   if (headR == nullptr || length == 1) return;
+   //move zeros
+   RefNode** head_ref = &headR;
+   RefNode** tail_ref = &tailR;
+   RefNode* temp = headR->next, *prev = headR;
+   int count = 0;
+   //move non-zeros to begin
+   while (temp) {
+      if (temp->val != 0) {
+         RefNode* curr = temp;
+         temp = temp->next;
+         prev->next = temp;
+         //move to begin
+         curr->next = *head_ref;
+      }
+      else {
+         prev = temp;
+         temp = temp->next;
+         count++;
+      }
+   }
+   //sort non-zero elements
+   int rL = length - count;
+   for (int k = 0; k < rL; k++) {
+      head_ref = &headR;
+      int swapped = 0;
+      for (int i = 0; i < rL - k - 1; i++) {
+         RefNode* p1 = *head_ref;
+         RefNode* p2 =  p1->next;
+         if (p1->val > p2->val && p1->val != 0 && p2->val != 0) { //swap
+            
+            //update head_ref
+            *head_ref = swap(p1, p2);
+            swapped = 1;
+         }
+         head_ref = &(*head_ref)->next;
+      }
+      if (swapped == 0) break;
+   }
 }

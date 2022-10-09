@@ -17,7 +17,6 @@ public:
     static ReferencesList refList;
     static DeleteStringList delStrList;
 
-    // TODO: may provide some attributes
 
 public:
     ConcatStringList();
@@ -38,7 +37,6 @@ public:
 
 public:
     class ReferencesList {
-        // TODO: may provide some attributes
         public: 
             class RefNode;
         private:
@@ -73,7 +71,7 @@ public:
         // TODO: may provide some attributes
         public:
             class DelStrNode;
-            class ReferencesList::RefNode;
+            // class ReferencesList::RefNode;
         private:
             int length;
             DelStrNode* headD;
@@ -101,8 +99,6 @@ public:
             };
     };
     class CharArrayNode {
-        // public: 
-        //     class CharArrayList;
         public:
             string CharArrayList;
             CharArrayNode* next;
@@ -110,14 +106,12 @@ public:
         public:
         CharArrayNode() : CharArrayList(""), next(nullptr), size(0) {}
         CharArrayNode(const char* ch): next(nullptr) {
-            int i = 0;
-            CharArrayList = "";
-            while (ch[i] != '\0') {
-                CharArrayList += ch[i];
-                i++;
-            }
-            CharArrayList += '\0';
-            size = i;
+            CharArrayList = ch;
+            size = CharArrayList.length();
+            // while (ch[i] != '\0') {
+            //     CharArrayList += ch[i];
+            //     i++;
+            // }
         }
         CharArrayNode(const string &str) {
             CharArrayList = str;
