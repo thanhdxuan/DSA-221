@@ -45,6 +45,17 @@ public:
             RefNode* tailR;
         public:
             ReferencesList(): length(0), headR(nullptr), tailR(nullptr) {}
+            ~ReferencesList() {
+                RefNode* temp = headR;
+                while (headR) {
+                    temp = headR;
+                    headR = headR->next;
+                    delete temp;
+                }
+                headR = nullptr;
+                tailR = nullptr;
+                length = 0;
+            }
             int size() const;
             int refCountAt(int index) const;
             void addRefAt(int index, int value);
@@ -52,6 +63,7 @@ public:
             // void addRefAt(const CharArrayNode &node, int value);
             void add(const RefNode &other); 
             void sort();
+            RefNode* swap(RefNode* p1, RefNode* p2);
             std::string refCountsString() const;
             void checkIndex(int index) const;
             void check();
@@ -65,6 +77,12 @@ public:
                     RefNode(): val(0), refAdrs(nullptr), next(nullptr) {}
                     RefNode(const RefNode &other): val(other.val), refAdrs(other.refAdrs), next(nullptr) {}
                     RefNode(const int &v, CharArrayNode* node): val(v), refAdrs(node), next(nullptr) {}
+                    ~RefNode() {
+                        delete refAdrs;
+                        val = -1;
+                        refAdrs = nullptr;
+                        next = nullptr;
+                    }
             };
     };
     class DeleteStringList {
@@ -79,6 +97,7 @@ public:
         public:
             int size() const;
             void add(const DelStrNode &other);
+            void delAt(int index);
             void checkNdel(); //check if ref == 0
             std::string totalRefCountsString() const;
         public:
@@ -89,6 +108,34 @@ public:
                     DelStrNode* next;
                 public:
                     DelStrNode(): headRef(nullptr), tailRef(nullptr), next(nullptr) {}
+                    ~DelStrNode() {
+                        // CharArrayNode* pH = headRef->refAdrs;
+                        // CharArrayNode* pT = tailRef->refAdrs;
+                        // if (headRef == nullptr && tailRef == nullptr) { next = nullptr; return; }
+                        // if (headRef == tailRef) { delete headRef; headRef = nullptr; tailRef = nullptr; delete pH; delete pT; pH = nullptr; pT = nullptr; return; }
+                        // if (pH == nullptr && pT == nullptr) {}
+                        // if (pH == pT) {
+                        //     delete pH;
+                        //     pH = nullptr;
+                        //     pT = nullptr;
+                        // }
+                        // else {
+                        //     CharArrayNode* temp = pH;
+                        //     while (pH) {
+                        //         temp = pH;
+                        //         pH = pH->next;
+                        //         delete temp;
+                        //         temp = nullptr;
+                        //     }
+                        //     pH = nullptr;
+                        //     pT = nullptr;
+                        // }
+                        // delete headRef;
+                        // delete tailRef;
+                        // headRef = nullptr;
+                        // tailRef = nullptr;
+
+                    }
                     DelStrNode(ReferencesList::RefNode &h, ReferencesList::RefNode &t) {
                         headRef = new ReferencesList::RefNode();
                         tailRef = new ReferencesList::RefNode();
@@ -105,6 +152,9 @@ public:
             int size;
         public:
         CharArrayNode() : CharArrayList(""), next(nullptr), size(0) {}
+        ~CharArrayNode() {
+            size = 0;
+        }
         CharArrayNode(const char* ch): next(nullptr) {
             CharArrayList = ch;
             size = CharArrayList.length();
