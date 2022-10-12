@@ -39,7 +39,7 @@ public:
     class ReferencesList {
         public: 
             class RefNode;
-        private:
+        public:
             int length;
             RefNode* headR;
             RefNode* tailR;
@@ -83,6 +83,37 @@ public:
                         refAdrs = nullptr;
                         next = nullptr;
                     }
+                    bool operator>(const RefNode& other) {
+                        return (this->val > other.val);
+                    }
+                    bool operator<=(const RefNode& other) {
+                        return !(this->operator>(other));
+                    }
+                    bool operator==(const RefNode& other) {
+                        return (this->val == other.val && this->refAdrs == other.refAdrs);
+                    }
+                    bool operator!=(const RefNode& other) {
+                        return !(this->operator==(other));
+                    }
+                    bool operator<(const RefNode& other) {
+                        return (this->val < other.val);
+                    }
+                    bool operator>=(const RefNode& other) {
+                        return !(this->operator<(other));
+                    }
+                    RefNode& operator[](int index) {
+                        if (index < 0) {
+                            throw std::out_of_range("Invalid index!");
+                        }
+                        RefNode* temp = this;
+                        int i = 0;
+                        while (temp) {
+                            if (i == index) break;
+                            i++;
+                            temp = temp->next;
+                        }
+                        return *temp;
+                    }
             };
     };
     class DeleteStringList {
@@ -108,34 +139,7 @@ public:
                     DelStrNode* next;
                 public:
                     DelStrNode(): headRef(nullptr), tailRef(nullptr), next(nullptr) {}
-                    ~DelStrNode() {
-                        // CharArrayNode* pH = headRef->refAdrs;
-                        // CharArrayNode* pT = tailRef->refAdrs;
-                        // if (headRef == nullptr && tailRef == nullptr) { next = nullptr; return; }
-                        // if (headRef == tailRef) { delete headRef; headRef = nullptr; tailRef = nullptr; delete pH; delete pT; pH = nullptr; pT = nullptr; return; }
-                        // if (pH == nullptr && pT == nullptr) {}
-                        // if (pH == pT) {
-                        //     delete pH;
-                        //     pH = nullptr;
-                        //     pT = nullptr;
-                        // }
-                        // else {
-                        //     CharArrayNode* temp = pH;
-                        //     while (pH) {
-                        //         temp = pH;
-                        //         pH = pH->next;
-                        //         delete temp;
-                        //         temp = nullptr;
-                        //     }
-                        //     pH = nullptr;
-                        //     pT = nullptr;
-                        // }
-                        // delete headRef;
-                        // delete tailRef;
-                        // headRef = nullptr;
-                        // tailRef = nullptr;
-
-                    }
+                    ~DelStrNode() {}
                     DelStrNode(ReferencesList::RefNode &h, ReferencesList::RefNode &t) {
                         headRef = new ReferencesList::RefNode();
                         tailRef = new ReferencesList::RefNode();
@@ -175,5 +179,4 @@ public:
 
 
 };
-
 #endif // __CONCAT_STRING_LIST_H__

@@ -134,7 +134,7 @@ ConcatStringList ConcatStringList::subString(int from, int to) const {
    checkIndex(from);
    //check index for "to" in subString function
    if (to < 0 || to > this->sizeL) {
-      throw out_of_range("Index of string is invalid!");
+      throw out_of_range("Index of string is invalid");
    }
    if (from >= to) throw logic_error("Invalid range");
    int lCh, rCh;
@@ -166,6 +166,11 @@ ConcatStringList ConcatStringList::subString(int from, int to) const {
       temp = temp->next;
    }
    //ref
+   if (subList.head == subList.tail) {
+      ReferencesList::RefNode* pR = new ReferencesList::RefNode(2, subList.head);
+      refList.add(*pR);
+      return subList;
+   }
    ReferencesList::RefNode* pR = new ReferencesList::RefNode(1, subList.head);
    ReferencesList::RefNode* pR1 = new ReferencesList::RefNode(1, subList.tail);
    refList.add(*pR);
@@ -176,16 +181,18 @@ ConcatStringList ConcatStringList::subString(int from, int to) const {
 ConcatStringList ConcatStringList::reverse() const {
    CharArrayNode* temp = head;
    ConcatStringList revList;
-   while (temp) {
+   while (true) {
       string s = string(temp->CharArrayList.rbegin(), temp->CharArrayList.rend());
       s.reserve();
       revList.addNode(s, 0);
+      if (temp == tail) break;;
       temp = temp->next;
    }
    //ref
    if (revList.head == revList.tail) {
       ReferencesList::RefNode* pR = new ReferencesList::RefNode(2, revList.head);
       refList.add(*pR);
+      return revList;
    }
    ReferencesList::RefNode* pR = new ReferencesList::RefNode(1, revList.head);
    ReferencesList::RefNode* pR1 = new ReferencesList::RefNode(1, revList.tail);
@@ -212,7 +219,7 @@ ConcatStringList::~ConcatStringList() {
 //RefList Method
 void ConcatStringList::ReferencesList::checkIndex(int index) const {
    if (index < 0 || index >= this->length) 
-      throw out_of_range("Index of references list is invalid!");
+      throw out_of_range("Index of references list is invalid");
 }
 
 int ConcatStringList::ReferencesList::size() const {
@@ -320,15 +327,24 @@ int ConcatStringList::DeleteStringList::size() const {
 
 std::string ConcatStringList::DeleteStringList::totalRefCountsString() const {
    if (headD == nullptr) return "TotalRefCounts[]";
+   stringstream ss;
+   ss << "TotalRefCounts[";
    int count = 0;
    DelStrNode* temp = headD;
-   while(temp) {
-      if (temp->headRef == temp->tailRef) count += temp->headRef->val;
-      else count += (temp->headRef->val + temp->tailRef->val); 
+
+   for (int i = 0; i < this->length; i++) {
+      if (temp->headRef == temp->tailRef) {
+         count = temp->headRef->val;
+      }
+      else {
+         count = (temp->headRef->val + temp->tailRef->val);
+      }
+      ss << count;
+      (i == length - 1) ? ss << "" : ss << ",";
       temp = temp->next;
    }
-   string s = "TotalRefCounts[" + to_string(count) + "]";
-   return s;
+   ss << "]";
+   return ss.str();
 }
 
 //additional
@@ -484,7 +500,6 @@ void ConcatStringList::ReferencesList::sort() {
          else {
             prev = temp;
             temp = temp->next;
-            count++;
          }
       }
    }
