@@ -146,35 +146,38 @@ class BinaryTree {
       }
    }
 
-   int calcPath(std::deque<int> *path) {
-      std::deque<int> res;
-      res = *path;
+   int calcPath(int path[], int pathLen) {
       int sum = 0;
       cout << "path: ";
-      while (!res.empty()) {
-         sum += res.front();
-         cout << res.front() << " ";
-         res.pop_front();
+      int idx = pathLen;
+      for (int i = 0; i < pathLen; i++) {
+         sum += path[i] * pow(10, idx - 1);
+         idx--;
+         cout << path[i] << " ";
       }
-      path->pop_back();
-      return sum; 
+      printf("- %d\n", sum);
+      return sum % 27022001; 
    }
-   void sumDigitPathRecur(Node *root, std::deque<int> *path, int *sum) {
+
+   void sumDigitPathRecur(Node *root, int path[], int pathLen, int* sum) {
       if (root == nullptr) return;
-      path->push_back(root->value);
+      path[pathLen] = root->value;
+      pathLen++;
       if (root->pLeft == nullptr && root->pRight == nullptr)
-         *sum += calcPath(path);
+         *sum += calcPath(path, pathLen);
       else {
-         sumDigitPathRecur(root->pLeft, path, sum);
-         sumDigitPathRecur(root->pRight, path, sum);
+         sumDigitPathRecur(root->pLeft, path, pathLen, sum);
+         sumDigitPathRecur(root->pRight, path, pathLen, sum);
       }
    }
    int sumDigitPath(Node *root) {
-      std::deque<int> *path = new deque<int>();
+      int path[100000];
       int *total = new int();
       *total = 0;
-      sumDigitPathRecur(root, path, total);
-      return *total;
+      sumDigitPathRecur(root, path, 0, total);
+      int sum = *total;
+      delete total;
+      return sum;
    }
    int sumDigitPath() {
       return sumDigitPath(this->root);
