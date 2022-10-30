@@ -1,10 +1,12 @@
 #ifndef BIN_TREE
 #define BIN_TREE
 #include <iostream>
-#include <string>
 #include <queue>
+#include <string>
+#include <deque>
 using namespace std;
 
+class BTNode;
 template <class K, class V>
 class BinaryTree {
   public:
@@ -12,13 +14,13 @@ class BinaryTree {
 
   private:
    Node *root;
+   friend class BTNode;
 
   public:
    BinaryTree() : root(nullptr) {}
    ~BinaryTree() {
       // You have to delete all Nodes in BinaryTree. However in this task, you can ignore it.
    }
-
    class Node {
      private:
       K key;
@@ -120,7 +122,7 @@ class BinaryTree {
    int sumOfLeafs() {
       return sumOfLeafsRecur(root);
    }
-   void BFSRecur(Node* curr) {
+   void BFSRecur(Node *curr) {
       if (curr == nullptr) return;
       printf("%d", curr->value);
       BFSRecur(curr->pLeft);
@@ -129,7 +131,7 @@ class BinaryTree {
    void BFS() {
       if (root == nullptr) return;
       Node *current = root;
-      std::queue<Node*> waitList;
+      std::queue<Node *> waitList;
       while (current) {
          printf("%d", current->value);
          if (current->pLeft != nullptr) waitList.push(current->pLeft);
@@ -143,7 +145,57 @@ class BinaryTree {
          }
       }
    }
+
+   int calcPath(std::deque<int> *path) {
+      std::deque<int> res;
+      res = *path;
+      int sum = 0;
+      cout << "path: ";
+      while (!res.empty()) {
+         sum += res.front();
+         cout << res.front() << " ";
+         res.pop_front();
+      }
+      path->pop_back();
+      return sum; 
+   }
+   void sumDigitPathRecur(Node *root, std::deque<int> *path, int *sum) {
+      if (root == nullptr) return;
+      path->push_back(root->value);
+      if (root->pLeft == nullptr && root->pRight == nullptr)
+         *sum += calcPath(path);
+      else {
+         sumDigitPathRecur(root->pLeft, path, sum);
+         sumDigitPathRecur(root->pRight, path, sum);
+      }
+   }
+   int sumDigitPath(Node *root) {
+      std::deque<int> *path = new deque<int>();
+      int *total = new int();
+      *total = 0;
+      sumDigitPathRecur(root, path, total);
+      return *total;
+   }
+   int sumDigitPath() {
+      return sumDigitPath(this->root);
+   }
+   void printPathRecur(Node *root) {
+   }
+   void printPath() { printPathRecur(this->root); };
+};
+
+class BTPath : public BinaryTree<int, int> {
 };
 // STUDENT ANSWER END
 
 #endif /* BIN_TREE */
+       /*
+          3
+       5     2
+           1   4
+       
+       8 + 6 + 9 = 23
+       8
+       3 6 3 = 12 (-3)
+       
+       */
