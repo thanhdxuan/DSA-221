@@ -4,6 +4,7 @@
 #include <queue>
 #include <string>
 #include <deque>
+#include <utility>
 using namespace std;
 
 class BTNode;
@@ -185,11 +186,31 @@ class BinaryTree {
    void printPathRecur(Node *root) {
    }
    void printPath() { printPathRecur(this->root); };
+
+   //TODO: sum of longest path, if 
+   
+   bool hasValue(Node *root, pair<int,int> val) {
+      if (root == nullptr) return false;
+      if (root->value == val.first || root->value == val.second) return true;
+      return hasValue(root->pLeft, val) || hasValue(root->pRight, val);
+   }
+
+   int lowestAncestor(Node* root, int a, int b) {
+      pair<int, int> val;
+      val = make_pair(a, b);
+      bool hRoot = root->value == a || root->value == b;
+      if (hRoot) return root->value;
+      bool hL = hasValue(root->pLeft, val);
+      bool hR = hasValue(root->pRight, val);
+      if (hL && hR) return root->value;
+      else if (hL) return lowestAncestor(root->pLeft, a, b);
+      return lowestAncestor(root->pRight, a, b); 
+   }
+   int lowestAncestor(int a, int b) {
+      return lowestAncestor(root, a, b);
+   }
 };
 
-class BTPath : public BinaryTree<int, int> {
-};
-// STUDENT ANSWER END
 
 #endif /* BIN_TREE */
        /*
