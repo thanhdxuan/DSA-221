@@ -149,6 +149,17 @@ class BinarySearchTree {
       cout << "\n";
       return sorted[k - 1];
    }
-
-
-};
+   
+   int singleChild(Node *curr) {
+      if (curr == nullptr) return 0;
+      if (curr->pLeft == nullptr && curr->pRight == nullptr) return 0;
+      if (curr->pLeft == nullptr || curr->pRight == nullptr) {
+         if (curr->pLeft == nullptr) return 1 + singleChild(curr->pRight);
+         if (curr->pRight == nullptr) return 1 + singleChild(curr->pLeft);
+      }
+      return singleChild(curr->pLeft) + singleChild(curr->pRight);
+   }
+   int singleChild() {
+      return singleChild(root);
+   }
+}; 
