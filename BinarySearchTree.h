@@ -162,4 +162,32 @@ class BinarySearchTree {
    int singleChild() {
       return singleChild(root);
    }
+
+   //delete every node inrange 
+   void deleteIfOutOfRange(Node* &root, int lo, int hi) {
+      if (root == nullptr) return;
+      if (root->pLeft != nullptr) deleteIfOutOfRange(root->pLeft, lo, hi);
+      if (root->pRight != nullptr) deleteIfOutOfRange(root->pRight, lo, hi);
+      
+      if (root->value < lo) {
+         Node *temp = root;
+         root = root-> pRight;
+         delete temp;
+      }
+      else if (root->value > hi) {
+         Node *temp = root;
+         root = root-> pLeft;
+         delete temp;
+      }
+   }
+   void delteOOR(int lo, int hi) {
+      deleteIfOutOfRange(root, lo, hi);
+   } 
+   // void subTreeWithRange(Node* root, int lo, int hi) {
+   //    if (root == nullptr) return;
+   //    if (root->value >= lo && root->value <= hi) {
+
+   //    }
+   //    deleteNodeRecur(root->pLeft, )
+   // }
 }; 
