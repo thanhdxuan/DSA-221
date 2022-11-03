@@ -1,9 +1,9 @@
 #ifndef BIN_TREE
 #define BIN_TREE
+#include <deque>
 #include <iostream>
 #include <queue>
 #include <string>
-#include <deque>
 #include <utility>
 using namespace std;
 
@@ -157,10 +157,10 @@ class BinaryTree {
          cout << path[i] << " ";
       }
       printf("- %d\n", sum);
-      return sum % 27022001; 
+      return sum % 27022001;
    }
 
-   void sumDigitPathRecur(Node *root, int path[], int pathLen, int* sum) {
+   void sumDigitPathRecur(Node *root, int path[], int pathLen, int *sum) {
       if (root == nullptr) return;
       path[pathLen] = root->value;
       pathLen++;
@@ -187,30 +187,43 @@ class BinaryTree {
    }
    void printPath() { printPathRecur(this->root); };
 
-   //TODO: sum of longest path, if 
-   
-   bool hasValue(Node *root, pair<int,int> val) {
+   // TODO: sum of longest path, if
+
+   bool hasValue(Node *root, pair<int, int> val) {
       if (root == nullptr) return false;
       if (root->value == val.first || root->value == val.second) return true;
       return hasValue(root->pLeft, val) || hasValue(root->pRight, val);
    }
 
-   int lowestAncestor(Node* root, int a, int b) {
+   int lowestAncestor(Node *root, int a, int b) {
       pair<int, int> val;
       val = make_pair(a, b);
       bool hRoot = root->value == a || root->value == b;
       if (hRoot) return root->value;
       bool hL = hasValue(root->pLeft, val);
       bool hR = hasValue(root->pRight, val);
-      if (hL && hR) return root->value;
-      else if (hL) return lowestAncestor(root->pLeft, a, b);
-      return lowestAncestor(root->pRight, a, b); 
+      if (hL && hR)
+         return root->value;
+      else if (hL)
+         return lowestAncestor(root->pLeft, a, b);
+      return lowestAncestor(root->pRight, a, b);
    }
    int lowestAncestor(int a, int b) {
       return lowestAncestor(root, a, b);
    }
+   int rangeCount(Node *root, int lo, int hi) {
+      if (root == nullptr) return 0;
+      int lC = rangeCount(root->pLeft, lo, hi);
+      int rC = rangeCount(root->pRight, lo, hi);
+      if (root->value >= lo && root->value <= hi) {
+         return 1 + lC + rC;
+      }
+      return lC + rC;
+   }
+   int rangeCount(int lo, int hi) {
+      return rangeCount(root, lo, hi);
+   }
 };
-
 
 #endif /* BIN_TREE */
        /*
