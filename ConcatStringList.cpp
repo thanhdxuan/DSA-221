@@ -134,7 +134,7 @@ ConcatStringList ConcatStringList::subString(int from, int to) const {
    checkIndex(from);
    //check index for "to" in subString function
    if (to < 0 || to > this->sizeL) {
-      throw out_of_range("Index of string is invalid");
+      throw out_of_range("Index of string is invalid!");
    }
    if (from >= to) throw logic_error("Invalid range");
    int lCh, rCh;
@@ -219,7 +219,7 @@ ConcatStringList::~ConcatStringList() {
 //RefList Method
 void ConcatStringList::ReferencesList::checkIndex(int index) const {
    if (index < 0 || index >= this->length) 
-      throw out_of_range("Index of references list is invalid");
+      throw out_of_range("Index of references list is invalid!");
 }
 
 int ConcatStringList::ReferencesList::size() const {
