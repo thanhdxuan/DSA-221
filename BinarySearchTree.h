@@ -1,6 +1,10 @@
+#include <algorithm>
 #include <iostream>
+#include <queue>
 #include <sstream>
+#include <stack>
 #include <string>
+#include <vector>
 using namespace std;
 #define SEPARATOR "#<ab@17943918#@>#"
 
@@ -86,32 +90,35 @@ class BinarySearchTree {
       // TODO: return the sum of all element in the tree has value in range [l,r].
       return sum(l, r, root);
    }
-   void addRecur(Node* &curr, T value) {
-      if (curr == nullptr) { curr = new Node(value); return; }
+   void addRecur(Node*& curr, T value) {
+      if (curr == nullptr) {
+         curr = new Node(value);
+         return;
+      }
       if (value >= curr->value) addRecur(curr->pRight, value);
       if (value < curr->value) addRecur(curr->pLeft, value);
    }
    void add(T value) {
       addRecur(root, value);
    }
-   void deleteNodeRecur(Node* &curr, T value) {
+   void deleteNodeRecur(Node*& curr, T value) {
       if (curr == nullptr) return;
-      if (value < curr->value) deleteNodeRecur(curr->pLeft, value);
-      else if (value > curr->value) deleteNodeRecur(curr->pRight, value);
+      if (value < curr->value)
+         deleteNodeRecur(curr->pLeft, value);
+      else if (value > curr->value)
+         deleteNodeRecur(curr->pRight, value);
       else {
-         if (curr->pRight == nullptr) { 
+         if (curr->pRight == nullptr) {
             Node* temp = curr;
             curr = curr->pLeft;
             delete temp;
             return;
-         }
-         else if (curr->pLeft == nullptr) {
+         } else if (curr->pLeft == nullptr) {
             Node* temp = curr;
             curr = curr->pRight;
             delete temp;
             return;
-         }
-         else {
+         } else {
             Node* temp = curr->pLeft;
             while (temp->pRight) {
                temp = temp->pRight;
@@ -124,4 +131,24 @@ class BinarySearchTree {
    void deleteNode(T value) {
       return deleteNodeRecur(root, value);
    }
+   // TODO: In the first level, we should traverse from left to right (order: 3)
+   // and in the second level, we traverse from right to left
+   //TODO: count value [lo, hi]
+
+   void inOrderRecur(Node* curr, int k, vector<int> &res) {
+      if (curr == nullptr) return;
+      inOrderRecur(curr->pLeft, k, res);
+      if (res.size() >= k) return;
+      res.push_back(curr->value);
+      inOrderRecur(curr->pRight, k, res);
+   }
+   int kthSmallest(int k) {
+      vector<int> sorted;
+      inOrderRecur(root, k, sorted);
+      for (auto i : sorted) cout << i << " ";
+      cout << "\n";
+      return sorted[k - 1];
+   }
+
+
 };
