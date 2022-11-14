@@ -171,17 +171,21 @@ class BinaryTree {
          sumDigitPathRecur(root->pRight, path, pathLen, sum);
       }
    }
-   int sumDigitPath(Node *root) {
-      int path[100000];
-      int *total = new int();
-      *total = 0;
-      sumDigitPathRecur(root, path, 0, total);
-      int sum = *total;
-      delete total;
-      return sum;
+   void sumDigitPath(Node *root, int pre_sum, int &sum) {
+      if (root == NULL) return;
+      int cur_sum = (pre_sum * 10 + root->value) % 27022001;
+      if (root->pLeft == NULL && root->pRight == NULL) {
+         sum = (sum + cur_sum) % 27022001;
+      }
+      else {
+         sumDigitPath(root->pLeft, cur_sum, sum);
+         sumDigitPath(root->pRight, cur_sum, sum);
+      }
    }
    int sumDigitPath() {
-      return sumDigitPath(this->root);
+      int sum = 0;
+      sumDigitPath(this->root, 0, sum);
+      return sum;
    }
    void printPathRecur(Node *root) {
    }
@@ -222,6 +226,36 @@ class BinaryTree {
    }
    int rangeCount(int lo, int hi) {
       return rangeCount(root, lo, hi);
+   }
+   
+   int longestPathSum(Node* root, int height, int &sum) {
+      if (root == NULL) return height;
+      int cur_height = height + 1;
+      sum += root->value;
+      if (root->pLeft == NULL && root->pRight == NULL) {
+         return cur_height;
+      }
+      int sumleft = 0;
+      int sumright = 0;
+      int hL = longestPathSum(root->pLeft, cur_height, sumleft);
+      int hR = longestPathSum(root->pRight, cur_height, sumright);
+      if (hL > hR) {
+         sum = root->value + sumleft;
+         return hL;
+      }
+      else if (hL == hR) {
+         sumright > sumleft ? sum = root->value + sumright : sum = root->value + sumleft;
+         return hR;
+      }
+      else {
+         sum = root->value + sumright;
+         return hR;
+      }
+   }
+   int longestPathSum() {
+      int sum = 0;
+      longestPathSum(this->root, 0, sum);
+      return sum;
    }
 };
 
