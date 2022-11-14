@@ -190,4 +190,32 @@ class BinarySearchTree {
    //    }
    //    deleteNodeRecur(root->pLeft, )
    // }
+   vector<int> levelAlterTraverse(Node* curr) {
+      // STUDENT ANSWER
+      vector<int> res;
+      if (curr == nullptr) return res;
+      stack<Node*> s1;
+      stack<Node*> s2;
+      s1.push(curr);
+      while (!s1.empty() || !s2.empty()) {
+         while (!s1.empty()) {
+            Node* temp = s1.top();
+            res.push_back(temp->value);            
+            s1.pop();
+            if (temp->pLeft != NULL) s2.push(temp->pLeft);
+            if (temp->pRight != NULL) s2.push(temp->pRight);
+         }
+         while (!s2.empty()) {
+            Node* temp = s2.top();
+            res.push_back(temp->value);            
+            s2.pop();
+            if (temp->pRight != NULL) s1.push(temp->pRight);
+            if (temp->pLeft != NULL) s1.push(temp->pLeft);
+         }
+      }
+      return res;
+   }
+   vector<int> levelAlterTraverse() {
+      return levelAlterTraverse(this->root);
+   }
 }; 
