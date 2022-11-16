@@ -83,6 +83,25 @@ class AVLTree {
             return;
       }
    }
+   void printInorderRecur(Node *curr) {
+      if (curr == nullptr) return;
+      printInorderRecur(curr->pLeft);
+      if (curr->pLeft) cout << " ";
+      cout << curr->data;
+      if (curr->pRight) cout << " ";
+      printInorderRecur(curr->pRight);
+   }
+   void printInorder() {
+      printInorderRecur(root);
+   }
+   bool searchRecur(Node *curr, const T &value) {
+      if (curr == nullptr) return false;
+      if (curr->data == value) return true;
+      return searchRecur(curr->pLeft, value) || searchRecur(curr->pRight, value);
+   }
+   bool search(const T &value) {
+      return searchRecur(root, value);
+   }
    void rotateLeft(Node *&curr) {
       if (curr == nullptr) return;
       Node *subRight = curr->pRight;
@@ -105,26 +124,23 @@ class AVLTree {
          return false;
          throw "subRight is null";
       }
-      if (subRight->balance == RH || subRight->balance == EH) { //Right of right
+      if (subRight->balance == RH || subRight->balance == EH) {  // Right of right
          rotateLeft(curr);
          curr->balance = EH;
          (curr->pLeft)->balance = EH;
-      }
-      else if (subRight->balance == LH) { //Left of right
+      } else if (subRight->balance == LH) {  // Left of right
          rotateRight(subRight);
          curr->pRight = subRight;
          rotateLeft(curr);
          if (curr->balance == EH) {
             curr->balance = EH;
             curr->pLeft->balance = EH;
-            curr->pRight->balance = EH;  
-         }
-         else if (curr->balance == RH) {
+            curr->pRight->balance = EH;
+         } else if (curr->balance == RH) {
             curr->balance = EH;
             curr->pLeft->balance = LH;
             curr->pRight->balance = EH;
-         }
-         else {
+         } else {
             curr->balance = EH;
             curr->pLeft->balance = EH;
             curr->pRight->balance = RH;
@@ -138,12 +154,11 @@ class AVLTree {
          return false;
          throw "subLeft is null";
       }
-      if (subLeft->balance == LH || subLeft->balance == EH) { //Left of left
+      if (subLeft->balance == LH || subLeft->balance == EH) {  // Left of left
          rotateRight(curr);
          curr->balance = EH;
          curr->pRight->balance = EH;
-      }
-      else if (subLeft->balance == RH) { //right of left
+      } else if (subLeft->balance == RH) {  // right of left
          rotateLeft(subLeft);
          curr->pLeft = subLeft;
          rotateRight(curr);
@@ -151,13 +166,11 @@ class AVLTree {
             curr->balance = EH;
             curr->pLeft->balance = EH;
             curr->pRight->balance = EH;
-         }
-         else if (curr->balance == RH) {
+         } else if (curr->balance == RH) {
             curr->balance = EH;
             curr->pLeft->balance = LH;
             curr->pRight->balance = EH;
-         }
-         else {
+         } else {
             curr->balance = EH;
             curr->pLeft->balance = EH;
             curr->pRight->balance = RH;
@@ -176,38 +189,33 @@ class AVLTree {
             if (curr->balance == EH) {
                curr->balance = RH;
                return true;
-            }
-            else if (curr->balance == LH) {
+            } else if (curr->balance == LH) {
                curr->balance = EH;
                return false;
-            }
-            else {
+            } else {
                return balanceRight(curr);
             }
          }
-      }
-      else {
+      } else {
          bool taller = insert(curr->pLeft, value);
          if (taller) {
             if (curr->balance == EH) {
                curr->balance = LH;
                return true;
-            }
-            else if (curr->balance == RH) {
+            } else if (curr->balance == RH) {
                curr->balance = EH;
                return false;
-            }
-            else {
+            } else {
                return balanceLeft(curr);
             }
          }
       }
-      return false; //for pass error
+      return false;  // for pass error
    }
 
    void insert(const T &value) {
       // TODO
-      insert (root, value);
+      insert(root, value);
    }
 
    class Node {
