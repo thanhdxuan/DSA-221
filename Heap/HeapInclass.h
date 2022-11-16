@@ -43,38 +43,21 @@ class Heap {
       }
    }
    void reHeapDown(int index) {
-        int firstLeaf = size / 2;
-        if (index < 0 || index >= firstLeaf) {
+        int leftChild = 2 * index + 1;
+        if (leftChild >= size) {
+            //not have leftChild
             return;
         }
-        int leftChildIdx = 2 * index + 1;
-        int rightChildIdx = 2 * index + 2;
-        if (rightChildIdx < size) {
-            if (data[leftChildIdx] < data[rightChildIdx]) {
-                //swap parent with right child
-                if (data[index] < data[rightChildIdx]) {
-                    int temp = data[rightChildIdx];
-                    data[rightChildIdx] = data[index];
-                    data[index] = temp;
-                    reHeapDown(rightChildIdx);
-                }
-            }
-            else {
-                //swap parent with left child
-                if (data[index] < data[leftChildIdx]) {
-                    int temp = data[leftChildIdx];
-                    data[leftChildIdx] = data[index];
-                    data[index] = temp;
-                    reHeapDown(leftChildIdx);
-                }
-            }
+        int rightChild = leftChild + 1;
+        if (rightChild >= size) {
+            //not have rightChild
+            swap(data[leftChild], data[index]);
         }
         else {
-            if (data[index] < data[leftChildIdx]) {
-                int temp = data[leftChildIdx];
-                data[leftChildIdx] = data[index];
-                data[index] = temp;
-                reHeapDown(leftChildIdx);
+            int child = (data[leftChild] > data[rightChild]) ? leftChild : rightChild;
+            if (data[child] > data[index]) {
+                swap(data[child], data[index]);
+                reHeapDown(child);
             }
         }
    }
