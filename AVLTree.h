@@ -118,7 +118,7 @@ class AVLTree {
       temp->pLeft = curr->pRight;
       curr->pRight = temp;
    }
-   bool balanceRight(Node *&curr) {
+   bool insertBalanceRight(Node *&curr) {
       Node *subRight = curr->pRight;
       if (subRight == nullptr) {
          return false;
@@ -148,7 +148,7 @@ class AVLTree {
       }
       return false;
    }
-   bool balanceLeft(Node *&curr) {
+   bool insertBalanceLeft(Node *&curr) {
       Node *subLeft = curr->pLeft;
       if (subLeft == nullptr) {
          return false;
@@ -178,7 +178,7 @@ class AVLTree {
       }
       return false;
    }
-   bool insert(Node *&curr, const T &value) {
+   bool insert(Node *&curr, const T &value) {  // return true if this tree taller
       if (curr == nullptr) {
          curr = new Node(value);
          return true;
@@ -193,7 +193,7 @@ class AVLTree {
                curr->balance = EH;
                return false;
             } else {
-               return balanceRight(curr);
+               return insertBalanceRight(curr);
             }
          }
       } else {
@@ -206,7 +206,7 @@ class AVLTree {
                curr->balance = EH;
                return false;
             } else {
-               return balanceLeft(curr);
+               return insertBalanceLeft(curr);
             }
          }
       }
@@ -216,6 +216,126 @@ class AVLTree {
    void insert(const T &value) {
       // TODO
       insert(root, value);
+   }
+   bool delRightBalance(Node *&curr) {
+      if (curr == nullptr) return false;
+      if (curr->balance == EH) {
+         curr->balance = RH;
+         return false;
+      } else if (curr->balance == LH) {
+         curr->balance = EH;
+         return true;
+      } else {
+         Node *subRight = curr->pRight;
+         if (subRight->balance == RH) {  // Right of right
+            rotateLeft(curr);
+            curr->balance = EH;
+            (curr->pLeft)->balance = EH;
+         } else if (subRight->balance == LH) {  // Left of right
+            rotateRight(subRight);
+            curr->pRight = subRight;
+            rotateLeft(curr);
+            if (curr->balance == EH) {
+               curr->balance = EH;
+               curr->pLeft->balance = EH;
+               curr->pRight->balance = EH;
+            } else if (curr->balance == RH) {
+               curr->balance = EH;
+               curr->pLeft->balance = LH;
+               curr->pRight->balance = EH;
+            } else {
+               curr->balance = EH;
+               curr->pLeft->balance = EH;
+               curr->pRight->balance = RH;
+            }
+         } else {
+            // E of L
+            rotateLeft(curr);
+            curr->balance = LH;
+            curr->pLeft->balance = RH;
+         }
+      }
+      return false;
+   }
+   bool delLeftBalance(Node *&curr) {
+      if (curr == nullptr) return false;
+      if (curr->balance == EH) {
+         curr->balance = LH;
+         return false;
+      } else if (curr->balance == RH) {
+         curr->balance = EH;
+         return true;
+      } else {  // curr->balance == LH
+         Node *subLeft = curr->pLeft;
+         if (subLeft->balance == LH) {  // Left of left
+            rotateRight(curr);
+            curr->balance = EH;
+            curr->pRight->balance = EH;
+         } else if (subLeft->balance == RH) {  // right of left
+            rotateLeft(subLeft);
+            curr->pLeft = subLeft;
+            rotateRight(curr);
+            if (curr->balance == EH) {
+               curr->balance = EH;
+               curr->pLeft->balance = EH;
+               curr->pRight->balance = EH;
+            } else if (curr->balance == RH) {
+               curr->balance = EH;
+               curr->pLeft->balance = LH;
+               curr->pRight->balance = EH;
+            } else {
+               curr->balance = EH;
+               curr->pLeft->balance = EH;
+               curr->pRight->balance = RH;
+            }
+         } else {  // E of L
+            rotateRight(curr);
+            curr->balance = RH;
+            curr->pRight->balance = LH;
+         }
+      }
+      return false;
+   }
+   bool removeRecur(Node *&curr, const T &value) {
+      if (curr == nullptr) return false;
+      if (curr->data == value) {
+         if (curr->pLeft == nullptr) {
+            Node *temp = curr;
+            curr = curr->pRight;
+            delete temp;
+            return true;
+         } else if (curr->pRight == nullptr) {
+            Node *temp = curr;
+            curr = curr->pLeft;
+            delete temp;
+            return true;
+         }
+         // get max value of left
+         Node *temp = curr->pLeft;
+         while (temp->pRight) {
+            temp = temp->pRight;
+         }
+         curr->data = temp->data;
+         bool shorter = removeRecur(curr->pLeft, temp->data);
+         if (shorter) {
+            return delRightBalance(curr);
+         }
+      } else if (value < curr->data) {  // delete at lef;t
+         bool shorter = removeRecur(curr->pLeft, value);
+         if (shorter) {
+            return delRightBalance(curr);
+         }
+      }
+      // delete at right
+      bool shorter = removeRecur(curr->pRight, value);
+      if (shorter) {
+         return delLeftBalance(curr);
+      }
+      return false;
+   }
+   void remove(const T &value) {
+      // TODO
+      removeRecur(root, value);
    }
 
    class Node {
