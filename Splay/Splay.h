@@ -59,7 +59,7 @@ class SplayTree {
       curr = subRight;
       temp->pRight = curr->pLeft;
       curr->pLeft = temp;
-
+      if (temp->pParent) temp->pParent->pLeft = curr;
       //change parent
       subRight->pParent = temp->pParent;
       temp->pParent = subRight;
@@ -72,7 +72,7 @@ class SplayTree {
       curr = subLeft;
       temp->pLeft = curr->pRight;
       curr->pRight = temp;
-
+      if (temp->pParent) temp->pParent->pRight = curr;
       //change parent
       subLeft->pParent = temp->pParent;
       temp->pParent = subLeft;
@@ -85,11 +85,9 @@ class SplayTree {
             // Zic
             if (p->pParent->pLeft == p) {
                rotateRight(p->pParent);
-               p->pParent = nullptr;
             } else {
                // Zac
                rotateLeft(p->pParent);
-               p->pParent = nullptr;
             }
          } else {
             if (p->pParent->pLeft == p && p->pParent->pParent->pLeft == p->pParent) {
@@ -121,12 +119,18 @@ class SplayTree {
       if (val < curr->val) {
          insertRecur(curr->pLeft, val);
          if (curr->pLeft) curr->pLeft->pParent = curr;
-         splay(curr->pLeft);
+         Node* subLeft = curr->pLeft;
+         splay(subLeft);
+         curr = subLeft;
+         return;
       }
       else {
          insertRecur(curr->pRight, val);
          if (curr->pRight) curr->pRight->pParent = curr;
-         splay(curr->pRight);
+         Node *subRight = curr->pRight;
+         splay(subRight);
+         curr = subRight;
+         return;
       }
    }
    void insert(int val) {
