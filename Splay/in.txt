@@ -1,0 +1,7 @@
+6
+insert 50
+insert 70
+insert 30
+insert 80
+insert 100
+insert 90

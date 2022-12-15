@@ -52,88 +52,56 @@ class SplayTree {
       printPreorder(root);
       cout << "\n";
    }
-   void rotateLeft(Node*& curr) {
-      if (curr == nullptr) return;
-      Node* subRight = curr->pRight;
-      Node* temp = curr;
-      curr = subRight;
-      temp->pRight = curr->pLeft;
-      curr->pLeft = temp;
-      if (temp->pParent) temp->pParent->pLeft = curr;
-      //change parent
-      subRight->pParent = temp->pParent;
-      temp->pParent = subRight;
-      if (temp->pRight) temp->pRight->pParent = temp;
+   Node* rotateLeft(Node* curr) {
+      if (curr == nullptr) return curr;
+      Node* temp = curr->pRight;
+      curr->pRight = temp->pLeft;
+      temp->pLeft = curr;
+      return temp;
    }
-   void rotateRight(Node*& curr) {
-      if (curr == nullptr) return;
-      Node* subLeft = curr->pLeft;
-      Node* temp = curr;
-      curr = subLeft;
-      temp->pLeft = curr->pRight;
-      curr->pRight = temp;
-      if (temp->pParent) temp->pParent->pRight = curr;
-      //change parent
-      subLeft->pParent = temp->pParent;
-      temp->pParent = subLeft;
-      if (temp->pLeft) temp->pLeft->pParent = temp;
+   Node* rotateRight(Node* curr) {
+      if (curr == nullptr) return curr;
+      Node* temp = curr->pLeft;
+      curr->pLeft = temp->pRight;
+      temp->pRight = curr;
+      return temp;
    }
-   void splay(Node* p) {
-      // To Do
+   void splay(Node* &p) {
       while (p->pParent != nullptr) {
          if (p->pParent->pParent == nullptr) {
-            // Zic
-            if (p->pParent->pLeft == p) {
-               rotateRight(p->pParent);
-            } else {
-               // Zac
-               rotateLeft(p->pParent);
+            if (p->pParent->pLeft == p) { //Zig
+               p = rotateRight(p);
             }
-         } else {
-            if (p->pParent->pLeft == p && p->pParent->pParent->pLeft == p->pParent) {
-               // Zig-Zig
-               rotateRight(p->pParent->pParent);
-               rotateRight(p->pParent);
+            else {
+               p = rotateLeft(p);
+            }
+         }
+         else {
+            if (p->pParent->pParent->pLeft) {
+               //Zig-Zig
+            }
+            else if (p->pParent->pParent->pLeft->pLeft) {
                
-            } else if (p->pParent->pRight == p && p->pParent->pParent->pRight == p->pParent) {
-               // Zac-Zac
-               rotateLeft(p->pParent->pParent);
-               rotateRight(p->pParent);
-            } else if (p->pParent->pRight == p && p->pParent->pParent->pLeft == p->pParent) {
-               // Zig-Zag
-               rotateLeft(p->pParent);
-               rotateRight(p->pParent);
-            } else {
-               // Zag-Zig
-               rotateRight(p->pParent);
-               rotateLeft(p->pParent);
             }
          }
       }
    }
-   void insertRecur(Node *&curr, const int &val) {
+   Node* insertRecur(Node *&curr, const int &val) {
       if (curr == nullptr) {
          curr = new Node(val);
-         return;
+         return curr;
       }
       if (val < curr->val) {
-         insertRecur(curr->pLeft, val);
-         if (curr->pLeft) curr->pLeft->pParent = curr;
-         Node* subLeft = curr->pLeft;
-         splay(subLeft);
-         curr = subLeft;
-         return;
+         Node* newNode = insertRecur(curr->pLeft, val);
+         newNode->pParent = curr;
+         splay(newNode);
+         return newNode;
       }
-      else {
-         insertRecur(curr->pRight, val);
-         if (curr->pRight) curr->pRight->pParent = curr;
-         Node *subRight = curr->pRight;
-         splay(subRight);
-         curr = subRight;
-         return;
-      }
+      Node* newNode = insertRecur(curr->pRight, val);
+      splay(newNode);
+      return newNode;
    }
    void insert(int val) {
-      insertRecur(root, val);
+      root = insertRecur(root, val);
    }
 };
